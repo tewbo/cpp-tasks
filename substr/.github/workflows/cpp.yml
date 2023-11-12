@@ -1,0 +1,41 @@
+name: Substr CI
+
+on:
+  pull_request
+
+jobs:
+  formatting-check:
+    name: Formatting Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run clang-format style check for C/C++/Protobuf programs.
+        uses: jidicula/clang-format-action@v4.9.0
+        with:
+          clang-format-version: '15'
+          check-path: '.'
+
+  tests:
+    needs: formatting-check
+    name: Testing substr
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        # clang-14 uses dwarf-5 which valgrind doesn't support yet
+        compilerSetter: [ CC=gcc CXX=g++, CC=clang CXX='clang++ -gdwarf-4 -stdlib=libc++' ASAN_OPTIONS=alloc_dealloc_mismatch=0 ]
+    steps:
+      - name: dependencies
+        run: |
+          sudo apt install binutils gcc g++ clang cmake
+          sudo apt install haskell-stack netbase
+      - uses: actions/checkout@v3
+      - name: setup tests
+        run: stack setup && stack build
+      - name: build
+        run: ${{ matrix.compilerSetter }} bash build.sh
+      - name: run debug tests
+        run: stack run _build_debug_san/solution
+      - name: run rwdi tests
+        run: stack run _build_rwdi_san/solution
+      - name: run release tests
+        run: stack run _build_release/solution

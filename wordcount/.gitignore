@@ -1,0 +1,29 @@
+# IDE
+*.user
+.idea
+*.cbp
+
+# Google tests
+googletest-build/
+googletest-download/
+googletest-src/
+lib/
+
+# Cmake
+CMakeCache.txt
+CMakeFiles/
+cmake-build*
+cmake_install.cmake
+Makefile
+
+# build
+*.o
+
+# executables
+a.out
+/hello
+/lc
+/wordcount
+
+# custom
+*.saved

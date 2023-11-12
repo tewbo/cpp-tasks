@@ -1,0 +1,20 @@
+name: C++ CI
+
+on:
+  pull_request
+
+jobs:
+  test:
+    name: Tests 
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: dependencies
+      run: sudo apt update && sudo apt install binutils nasm python3 
+
+    - name: Build
+      run: nasm -felf64 wordcount.asm && ld wordcount.o -o wordcount
+
+    - name: Test
+      run: ./test.py
